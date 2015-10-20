@@ -5,7 +5,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Case c00 = new Case(0, 0);
+		/*Case c00 = new Case(0, 0);
 		Case c10 = new Case(1, 0);
 		Case c20 = new Case(2, 0);
 		Case c01 = new Case(0, 1);
@@ -18,7 +18,10 @@ public class Main {
 		System.out.println(c11.estVoisinDe(c01));
 		System.out.println(c11.estVoisinDe(c02));
 		System.out.println(c11.estVoisinDe(c12));
-		System.out.println(c11.estVoisinDe(c22));
+		System.out.println(c11.estVoisinDe(c22));*/
+		
+		Carte hex = new Carte(3);
+		Case c = hex.getCarte()[2][2];
 	}
 
 }

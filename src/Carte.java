@@ -21,9 +21,31 @@ public class Carte {
 		}
 	}
 	
+	public ArrayList<Arraylist<Case>> getCarte(){
+		return carte_;
+	}
+	
+	public int getTaille(){
+		return taille_;
+	}
+	
+	public void afficher(){
+		String acc="";
+		int i = 0;
+		for(ArrayList<Case> l : carte_){
+			
+			for(Case c : l){
+				
+			}
+		}
+		
+		
+		
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		
+		
 	}
 
 }

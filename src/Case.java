@@ -41,4 +41,6 @@ public class Case {
 		
 		return voisin;
 	}
+	
+
 }
