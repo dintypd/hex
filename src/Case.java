@@ -8,6 +8,11 @@ public class Case {
 	private Case representant_;
 	private ArrayList<Case> fils_;
 	
+	/**
+	 * Constructeur d'une case, la couleur est mise à 0 par défault
+	 * @param x la première coordonnée de la case
+	 * @param y la seconde coordonnée de la case
+	 */
 	public Case(int x, int y)
 	{
 		x_ = x;
@@ -16,16 +21,38 @@ public class Case {
 		fils_ = new ArrayList<Case>();
 	}
 	
+	/**
+	 * Accesseur de la première coordonnée de la case
+	 * @return la coordonnée x de la case
+	 */
 	public int getX()
 	{
 		return x_;
 	}
 	
+	/**
+	 * Accesseur de la seconde coordonnée de la case
+	 * @return la coordonnée y de la case
+	 */
 	public int getY()
 	{
 		return y_;
 	}
 	
+	/**
+	 * Accesseur de la couleur de la case
+	 * @return la couleur de la case
+	 */
+	public int getCouleur()
+	{
+		return couleur_;
+	}
+	
+	/**
+	 * Test de voisinage de deux cases
+	 * @param c la case dont on veut savoir si elle est voisine de "this"
+	 * @return vrai si la case en paramètre et "this" sont voisines
+	 */
 	public boolean estVoisinDe(Case c)
 	{
 		boolean voisin = false;
@@ -33,12 +60,17 @@ public class Case {
 		if(Math.abs(x_-c.getX()) <= 1 && Math.abs(y_-c.getY()) <= 1)
 		{
 			if(!((x_-c.getX() == 1 && y_-c.getY() == 1 ) ||
-			   (x_-c.getX() == -1 && x_-c.getY() == 1)))
+			   (x_-c.getX() == -1 && x_-c.getY() == -1)))
 			{
 				voisin = true;
 			}
 		}
 		
 		return voisin;
+	}
+	
+	public String toString()
+	{
+		return couleur_+"_";
 	}
 }
