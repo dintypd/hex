@@ -23,6 +23,9 @@ public class Main {
 		System.out.println(c11.estVoisinDe(c21));
 		System.out.println(c11.estVoisinDe(c20));
 		System.out.println(c11.estVoisinDe(c10));
+		System.out.println(c11.estVoisinDe(c22));
+		
+		Carte hex = new Carte(3);
 	}
 
 }
