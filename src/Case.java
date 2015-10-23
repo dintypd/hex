@@ -19,6 +19,7 @@ public class Case {
 		y_ = y;
 		couleur_ = 0;
 		fils_ = new ArrayList<Case>();
+		representant_ = this;
 	}
 	
 	/**
@@ -48,6 +49,11 @@ public class Case {
 		return couleur_;
 	}
 	
+	public void setCouleur(int couleur)
+	{
+		couleur_ = couleur;
+	}
+	
 	/**
 	 * Test de voisinage de deux cases
 	 * @param c la case dont on veut savoir si elle est voisine de "this"
@@ -71,6 +77,6 @@ public class Case {
 	
 	public String toString()
 	{
-		return couleur_+"_";
+		return couleur_+"";
 	}
 }
