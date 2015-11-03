@@ -19,7 +19,7 @@ public class Case {
 		y_ = y;
 		couleur_ = 0;
 		fils_ = new ArrayList<Case>();
-		representant_ = this;
+		representant_ = null;
 	}
 	
 	/**
@@ -77,6 +77,6 @@ public class Case {
 	
 	public String toString()
 	{
-		return couleur_+"";
+		return "["+x_+";"+y_+"]";
 	}
 }

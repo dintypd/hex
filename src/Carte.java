@@ -25,23 +25,7 @@ public class Carte {
 			ArrayList<Case> l = new ArrayList<Case>();
 			for(int j = 0; j < taille; ++j)
 			{
-				l.add(new Case(j, i));
-				////// ajout de pions de couleur sur les cotés pour marquer les camps ///////
-				////// surement à refaire: fonctionne mais aucune gestion des classes ///////
-				if(i == 0 || i == taille_-1)
-				{
-					if(j > 0 && j < taille_-1)
-					{
-						l.get(j).setCouleur(1);
-					}
-				}
-				else if(i > 0 && i < taille_-1)
-				{
-					if(j == 0 || j == taille_-1)
-					{
-						l.get(j).setCouleur(2);
-					}
-				}
+				l.add(new Case(i, j));
 				///////////////////////////////////////////////////////////////////////////
 			}
 			carte_.add(l);
@@ -119,6 +103,55 @@ public class Carte {
 		}
 		carte_.get(y).get(x).setCouleur(couleur);
 		return true;
+	}
+	
+	public ArrayList<Case> getVoisins(Case c)
+	{
+		ArrayList<Case> voisins = new ArrayList<Case>();
+		boolean hg = false;
+		boolean bd = false;
+		if(c.getX() != 0)
+		{
+			// voisin gauche
+			voisins.add(carte_.get(c.getX()-1).get(c.getY()));
+			if(c.getY() != 0)
+			{
+				// voisin haut gauche
+				voisins.add(carte_.get(c.getX()).get(c.getY()-1));
+				hg = true;
+			}
+			if(c.getY() != taille_-1)
+			{
+				// voisin bas gauche, bas droite
+				voisins.add(carte_.get(c.getX()-1).get(c.getY()+1));
+				voisins.add(carte_.get(c.getX()).get(c.getY()+1));
+				bd = true;
+			}
+		}
+		if(c.getX() != taille_-1)
+		{
+			// voisin droite
+			voisins.add(carte_.get(c.getX()+1).get(c.getY()));
+			if(c.getY() != 0)
+			{
+				// voisin haut droite haut gauche
+				voisins.add(carte_.get(c.getX()+1).get(c.getY()-1));
+				if(!hg)
+				{
+					voisins.add(carte_.get(c.getX()).get(c.getY()-1));
+				}
+			}
+			if(c.getY() != taille_-1)
+			{
+				// voisin bas droite
+				if(!bd)
+				{
+					voisins.add(carte_.get(c.getX()).get(c.getY()+1));
+				}
+			}
+		}
+		
+		return voisins;
 	}
 	
 	public void joueDeuxHumains()
