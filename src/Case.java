@@ -79,4 +79,13 @@ public class Case {
 	{
 		return couleur_+"";
 	}
+	
+	public int nombreDeDescendants(){
+		int nbfils = 1;
+		for(Case f : fils_){
+			nbfils += f.nombreDeDescendants();
+		}
+		return nbfils + fils_.size();
+	}
+	
 }
