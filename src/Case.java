@@ -80,6 +80,10 @@ public class Case {
 		return couleur_+"";
 	}
 	
+	/**
+	 * Renvoie le nombre de descendants d'une case
+	 * @return le nombre de fils d'une case et des fils de ses fils, comptant la case elle-même
+	 */
 	public int nombreDeDescendants(){
 		int nbfils = 1;
 		for(Case f : fils_){
