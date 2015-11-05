@@ -8,5 +8,4 @@ public class Main {
 		Carte hex = new Carte(15);
 		hex.joueDeuxHumains();
 	}
-
 }

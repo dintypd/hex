@@ -85,7 +85,12 @@ public class Case {
 	 */
 	public String affichePosition()
 	{
-		return "["+x_+";"+y_+"]";
+		String descendants = "";
+		for(Case fils : fils_)
+		{
+			descendants += fils.affichePosition()+";";
+		}
+		return "["+x_+";"+y_+"] ("+descendants+")";
 	}
 	
 	/**
