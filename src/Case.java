@@ -49,6 +49,10 @@ public class Case {
 		return couleur_;
 	}
 	
+	/**
+	 * Modificateur de la couleur d'une case
+	 * @param couleur la couleur voulue pour la case
+	 */
 	public void setCouleur(int couleur)
 	{
 		couleur_ = couleur;
@@ -75,9 +79,22 @@ public class Case {
 		return voisin;
 	}
 	
-	public String toString()
+	/**
+	 * Affichage d'une case via sa position
+	 * @return une string du type [x;y]
+	 */
+	public String affichePosition()
 	{
 		return "["+x_+";"+y_+"]";
+	}
+	
+	/**
+	 * Affichage d'une case selon sa couleur
+	 * @return une string correspondant à la couleur du pion
+	 */
+	public String toString()
+	{
+		return couleur_+"";
 	}
 	
 	/**
@@ -92,4 +109,86 @@ public class Case {
 		return nbfils + fils_.size();
 	}
 	
+	/**
+	 * Accesseur du représentant de la case
+	 * @return une case représentante de la classe qui contient "this"
+	 */
+	public Case classe()
+	{
+		if(representant_ == null)
+		{
+			return this;
+		}
+		else
+		{
+			return representant_.classe();
+		}
+	}
+	
+	/**
+	 * Modificatteur du représentant de la case
+	 * @param c une case, nouveau représentant de "this"
+	 */
+	public void setClasse(Case c)
+	{
+		representant_ = c;
+		c.addFils(this);
+	}
+	
+	public void addFils(Case c)
+	{
+		fils_.add(c);
+	}
+	
+	/**
+	 * Méthode qui réalise l'union des classes de "this" et voisin en utilisant l'union par rang
+	 * @param voisin une case membre de la classe que l'on veut unir à celle de "this"
+	 */
+	public void union(Case voisin)
+	{
+		Case repThis = classe();
+		Case repVoisin = voisin.classe();
+		if(repThis != repVoisin)
+		{
+			if(repThis.nombreDeDescendants() > repVoisin.nombreDeDescendants())
+			{
+				repVoisin.setClasse(repThis);
+			}
+			else
+			{
+				repThis.setClasse(repVoisin);
+			}
+		}
+	}
+	
+	/**
+	 * Affichage via sa position de chaque case de la classe de "this"
+	 */
+	public void afficheComposante()
+	{
+		if(representant_ == null)
+		{
+			System.out.println(parcoursProfondeur());
+		}
+		else
+		{
+			representant_.afficheComposante();
+		}
+	}
+	
+	/**
+	 * Parcours en profondeur de la liste de tous les descendants de "this"
+	 * @return une string contenant l'affichage des position de chaque descendant de "this"
+	 */
+	public String parcoursProfondeur()
+	{
+		String acc = affichePosition();
+		
+		for(Case fils : fils_)
+		{
+			acc += fils.parcoursProfondeur();
+		}
+		
+		return acc;
+	}
 }

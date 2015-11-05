@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public class Carte {
 	private ArrayList<ArrayList<Case>> carte_;
-	private int taille_;
-	private Joueur joueurCourant_;
+	private int taille_; // la taille de la carte
+	private Joueur joueurCourant_; // le joueur qui joue actuellement
 	private ArrayList<Joueur> joueurs_;
 	
 	/**
@@ -18,17 +18,37 @@ public class Carte {
 		taille_ = taille;
 		carte_ = new ArrayList<ArrayList<Case>>();
 		
-		// on initialise le plateau de jeu:
-		//  - chaque case à pour couleur 0 au début sauf celles des cotés
+		// on initialise le plateau de jeu: aucune case n'a de couleur
 		for(int i = 0; i < taille; ++i)
 		{
 			ArrayList<Case> l = new ArrayList<Case>();
 			for(int j = 0; j < taille; ++j)
 			{
-				l.add(new Case(i, j));
-				///////////////////////////////////////////////////////////////////////////
+				l.add(new Case(j, i));
 			}
 			carte_.add(l);
+		}
+		
+		// on initialise les cases des coté, chaque coté à la même couleur que son coté opposé
+		for(int i = 0; i < taille; ++i)
+		{
+			for(int j = 0; j < taille; ++j)
+			{
+				if(i == 0 || i == taille_-1)
+				{
+					if(j > 0 && j < taille_-1)
+					{
+						ajoutePion(i, j, 1);
+					}
+				}
+				else if(i > 0 && i < taille_-1)
+				{
+					if(j == 0 || j == taille_-1)
+					{
+						ajoutePion(i, j, 2);
+					}
+				}
+			}
 		}
 		
 		// initialisation des coins
@@ -97,14 +117,29 @@ public class Carte {
 	 */
 	public boolean ajoutePion(int x, int y, int couleur)
 	{
-		if(carte_.get(y).get(x).getCouleur() != 0)
+		Case c = getCase(x, y);
+		if(c.getCouleur() != 0)
 		{
 			return false;
 		}
-		carte_.get(y).get(x).setCouleur(couleur);
+		c.setCouleur(couleur);
+		
+		ArrayList<Case> voisins = getVoisins(c);
+		for(Case voisin : voisins)
+		{
+			if(voisin.getCouleur() == couleur)
+			{
+				c.union(voisin);
+			}
+		}
 		return true;
 	}
 	
+	/**
+	 * Accesseur des voisins d'une case
+	 * @param c une case
+	 * @return un tableau contenant les cases voisines de c
+	 */
 	public ArrayList<Case> getVoisins(Case c)
 	{
 		ArrayList<Case> voisins = new ArrayList<Case>();
@@ -113,32 +148,39 @@ public class Carte {
 		if(c.getX() != 0)
 		{
 			// voisin gauche
-			voisins.add(carte_.get(c.getX()-1).get(c.getY()));
+			voisins.add(getCase(c.getX()-1, c.getY()));
+			//voisins.add(carte_.get(c.getX()-1).get(c.getY()));
 			if(c.getY() != 0)
 			{
 				// voisin haut gauche
-				voisins.add(carte_.get(c.getX()).get(c.getY()-1));
+				voisins.add(getCase(c.getX(), c.getY()-1));
+				//voisins.add(carte_.get(c.getX()).get(c.getY()-1));
 				hg = true;
 			}
 			if(c.getY() != taille_-1)
 			{
 				// voisin bas gauche, bas droite
-				voisins.add(carte_.get(c.getX()-1).get(c.getY()+1));
-				voisins.add(carte_.get(c.getX()).get(c.getY()+1));
+				voisins.add(getCase(c.getX()-1, c.getY()+1));
+				voisins.add(getCase(c.getX(), c.getY()+1));
+				//voisins.add(carte_.get(c.getX()-1).get(c.getY()+1));
+				//voisins.add(carte_.get(c.getX()).get(c.getY()+1));
 				bd = true;
 			}
 		}
 		if(c.getX() != taille_-1)
 		{
 			// voisin droite
-			voisins.add(carte_.get(c.getX()+1).get(c.getY()));
+			voisins.add(getCase(c.getX()+1, c.getY()));
+			//voisins.add(carte_.get(c.getX()+1).get(c.getY()));
 			if(c.getY() != 0)
 			{
 				// voisin haut droite haut gauche
-				voisins.add(carte_.get(c.getX()+1).get(c.getY()-1));
+				voisins.add(getCase(c.getX()+1, c.getY()-1));
+				//voisins.add(carte_.get(c.getX()+1).get(c.getY()-1));
 				if(!hg)
 				{
-					voisins.add(carte_.get(c.getX()).get(c.getY()-1));
+					voisins.add(getCase(c.getX(), c.getY()-1));
+					//voisins.add(carte_.get(c.getX()).get(c.getY()-1));
 				}
 			}
 			if(c.getY() != taille_-1)
@@ -146,7 +188,8 @@ public class Carte {
 				// voisin bas droite
 				if(!bd)
 				{
-					voisins.add(carte_.get(c.getX()).get(c.getY()+1));
+					voisins.add(getCase(c.getX(), c.getY()+1));
+					//voisins.add(carte_.get(c.getX()).get(c.getY()+1));
 				}
 			}
 		}
@@ -154,6 +197,9 @@ public class Carte {
 		return voisins;
 	}
 	
+	/**
+	 * Méthode qui lance le jeu
+	 */
 	public void joueDeuxHumains()
 	{
 		// on crée un scanner pour pouvoir lire ce qu'écris un joueur
@@ -190,16 +236,24 @@ public class Carte {
 					System.out.println("Y doit être compris entre 0 et "+(taille_-1)+"\nY ?");
 					y = sc.nextInt();
 				}
-			
+				
+				// on ajoute le pion en (x, y)
 				ajouter = ajoutePion(x, y, joueurCourant_.getCouleur());
+				// pour le debug, on affiche la composante
+				getCase(x, y).afficheComposante();
+				
+				// si on ne peut pas ajouter
 				if(!ajouter)
 				{
 					System.out.println("Vous ne pouvez pas ajouter un pion ici !");
 				}
 			}
+			
+			// on passe au joueur suivant
 			System.out.println("Fin du tour\n");
 			joueurCourant_ = joueurCourant_.suivant();
 			
+			// on teste si le jeu est fini
 			enCours = !finDuJeu();
 			ajouter = false;
 		}
@@ -209,5 +263,16 @@ public class Carte {
 	public boolean finDuJeu()
 	{
 		return false;
+	}
+	
+	/**
+	 * Accesseur de la case aux coordonnées données
+	 * @param x la première coordonnée
+	 * @param y la seconde coordonnée
+	 * @return la case de coordonnées (x, y)
+	 */
+	public Case getCase(int x, int y)
+	{
+		return carte_.get(y).get(x);
 	}
 }
