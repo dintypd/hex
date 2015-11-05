@@ -110,7 +110,7 @@ public class Case {
 	}
 	
 	/**
-	 * Accesseur du représentant de la case
+	 * Accesseur du représentant de la case, utilise la compression des chemins
 	 * @return une case représentante de la classe qui contient "this"
 	 */
 	public Case classe()
@@ -121,12 +121,12 @@ public class Case {
 		}
 		else
 		{
-			return representant_.classe();
+			return representant_ = representant_.classe();
 		}
 	}
 	
 	/**
-	 * Modificatteur du représentant de la case
+	 * Modificateur du représentant de la case
 	 * @param c une case, nouveau représentant de "this"
 	 */
 	public void setClasse(Case c)
