@@ -7,7 +7,10 @@ public class Case {
 	private int couleur_;
 	private Case representant_;
 	private ArrayList<Case> fils_;
-	
+        public static final String DEFAUT = "\u001B[0m";
+        public static final String ROUGE = "\u001B[31m";
+        public static final String BLEU = "\u001B[34m";
+
 	/**
 	 * Constructeur d'une case, la couleur est mise à 0 par défault
 	 * @param x la première coordonnée de la case
@@ -21,7 +24,7 @@ public class Case {
 		fils_ = new ArrayList<Case>();
 		representant_ = null;
 	}
-	
+
 	/**
 	 * Accesseur de la première coordonnée de la case
 	 * @return la coordonnée x de la case
@@ -30,7 +33,7 @@ public class Case {
 	{
 		return x_;
 	}
-	
+
 	/**
 	 * Accesseur de la seconde coordonnée de la case
 	 * @return la coordonnée y de la case
@@ -39,7 +42,7 @@ public class Case {
 	{
 		return y_;
 	}
-	
+
 	/**
 	 * Accesseur de la couleur de la case
 	 * @return la couleur de la case
@@ -48,7 +51,7 @@ public class Case {
 	{
 		return couleur_;
 	}
-	
+
 	/**
 	 * Modificateur de la couleur d'une case
 	 * @param couleur la couleur voulue pour la case
@@ -57,7 +60,7 @@ public class Case {
 	{
 		couleur_ = couleur;
 	}
-	
+
 	/**
 	 * Test de voisinage de deux cases
 	 * @param c la case dont on veut savoir si elle est voisine de "this"
@@ -66,7 +69,7 @@ public class Case {
 	public boolean estVoisinDe(Case c)
 	{
 		boolean voisin = false;
-		
+
 		if(Math.abs(x_-c.getX()) <= 1 && Math.abs(y_-c.getY()) <= 1)
 		{
 			if(!((x_-c.getX() == 1 && y_-c.getY() == 1 ) ||
@@ -75,10 +78,10 @@ public class Case {
 				voisin = true;
 			}
 		}
-		
+
 		return voisin;
 	}
-	
+
 	/**
 	 * Affichage d'une case via sa position
 	 * @return une string du type [x;y]
@@ -92,16 +95,19 @@ public class Case {
 		}
 		return "["+x_+";"+y_+"] ("+descendants+")";
 	}
-	
+
 	/**
 	 * Affichage d'une case selon sa couleur
 	 * @return une string correspondant à la couleur du pion
 	 */
-	public String toString()
-	{
-		return couleur_+"";
+	public String toString(){
+          if (couleur_==1){
+            return BLEU+couleur_+DEFAUT;}
+          else if (couleur_==2){
+              return ROUGE+couleur_+DEFAUT;}
+          else return couleur_+"";
 	}
-	
+
 	/**
 	 * Renvoie le nombre de descendants d'une case
 	 * @return le nombre de fils d'une case et des fils de ses fils, comptant la case elle-même
@@ -113,7 +119,7 @@ public class Case {
 		}
 		return nbfils + fils_.size();
 	}
-	
+
 	/**
 	 * Accesseur du représentant de la case, utilise la compression des chemins
 	 * @return une case représentante de la classe qui contient "this"
@@ -129,7 +135,7 @@ public class Case {
 			return representant_ = representant_.classe();
 		}
 	}
-	
+
 	/**
 	 * Modificateur du représentant de la case
 	 * @param c une case, nouveau représentant de "this"
@@ -139,12 +145,12 @@ public class Case {
 		representant_ = c;
 		c.addFils(this);
 	}
-	
+
 	public void addFils(Case c)
 	{
 		fils_.add(c);
 	}
-	
+
 	/**
 	 * Méthode qui réalise l'union des classes de "this" et voisin en utilisant l'union par rang
 	 * @param voisin une case membre de la classe que l'on veut unir à celle de "this"
@@ -165,7 +171,7 @@ public class Case {
 			}
 		}
 	}
-	
+
 	/**
 	 * Affichage via sa position de chaque case de la classe de "this"
 	 */
@@ -180,7 +186,7 @@ public class Case {
 			representant_.afficheComposante();
 		}
 	}
-	
+
 	/**
 	 * Parcours en profondeur de la liste de tous les descendants de "this"
 	 * @return une string contenant l'affichage des position de chaque descendant de "this"
@@ -188,12 +194,12 @@ public class Case {
 	public String parcoursProfondeur()
 	{
 		String acc = affichePosition();
-		
+
 		for(Case fils : fils_)
 		{
 			acc += fils.parcoursProfondeur();
 		}
-		
+
 		return acc;
 	}
 }

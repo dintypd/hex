@@ -8,7 +8,7 @@ public class Carte {
 	private int taille_; // la taille de la carte
 	private Joueur joueurCourant_; // le joueur qui joue actuellement
 	private ArrayList<Joueur> joueurs_;
-	
+
 	/**
 	 * Constructeur qui initialise le plateau
 	 * @param taille la taille du plateau, qui est carré
@@ -17,7 +17,7 @@ public class Carte {
 	{
 		taille_ = taille;
 		carte_ = new ArrayList<ArrayList<Case>>();
-		
+
 		// on initialise le plateau de jeu: aucune case n'a de couleur
 		for(int i = 0; i < taille; ++i)
 		{
@@ -28,7 +28,7 @@ public class Carte {
 			}
 			carte_.add(l);
 		}
-		
+
 		// on initialise les cases des coté, chaque coté à la même couleur que son coté opposé
 		for(int i = 0; i < taille; ++i)
 		{
@@ -50,13 +50,13 @@ public class Carte {
 				}
 			}
 		}
-		
+
 		// initialisation des coins
 		carte_.get(0).get(0).setCouleur(9);
 		carte_.get(0).get(taille_-1).setCouleur(9);
 		carte_.get(taille_-1).get(0).setCouleur(9);
 		carte_.get(taille_-1).get(taille_-1).setCouleur(9);
-		
+
 		// on initialise la liste des joueurs
 		joueurs_ = new ArrayList<Joueur>();
 		Joueur j1 = new Joueur(1, "j1");
@@ -67,7 +67,7 @@ public class Carte {
 		joueurs_.add(j2);
 		joueurCourant_ = j1;
 	}
-	
+
 	/**
 	 * Accesseur de la carte
 	 * @return la carte
@@ -75,7 +75,7 @@ public class Carte {
 	public ArrayList<ArrayList<Case>> getCarte(){
 		return carte_;
 	}
-	
+
 	/**
 	 * Accesseur de la taille de la carte
 	 * @return la taille
@@ -83,7 +83,7 @@ public class Carte {
 	public int getTaille(){
 		return taille_;
 	}
-	
+
 	/**
 	 * Méthode d'affichage du plateau de jeu
 	 */
@@ -101,14 +101,14 @@ public class Carte {
 			acc += "|";
 			// pour chaque case de cette ligne
 			for(Case c : l){
-				acc += c+"|";
+                          acc += c+"|";
 			}
 			i += 1;
 			// on affiche la ligne
 			System.out.println(acc);
 		}
 	}
-	
+
 	/**
 	 * Ajoute si c'est possible un pion du joueur courant aux coordonnées données
 	 * @param x la coordonnée x du pion
@@ -123,7 +123,7 @@ public class Carte {
 			return false;
 		}
 		c.setCouleur(couleur);
-		
+
 		ArrayList<Case> voisins = getVoisins(c);
 		for(Case voisin : voisins)
 		{
@@ -134,7 +134,7 @@ public class Carte {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Accesseur des voisins d'une case
 	 * @param c une case
@@ -193,10 +193,10 @@ public class Carte {
 				}
 			}
 		}
-		
+
 		return voisins;
 	}
-	
+
 	/**
 	 * Méthode qui lance le jeu
 	 */
@@ -206,7 +206,7 @@ public class Carte {
 		Scanner sc = new Scanner(System.in);
 		int x;
 		int y;
-		
+
 		// booleen qui nous dit si la partie est encore en cours
 		boolean enCours = true;
 		boolean ajouter = false;
@@ -215,10 +215,10 @@ public class Carte {
 			System.out.println("Tour de "+joueurCourant_);
 			System.out.println("Ou voulez vous placer votre pion ?");
 			afficher();
-			
+
 			while(!ajouter)
 			{
-			
+
 				// récupération de x
 				System.out.println("X ?");
 				x = sc.nextInt();
@@ -227,7 +227,7 @@ public class Carte {
 					System.out.println("X doit être compris entre 0 et "+(taille_-1)+"\nX ?");
 					x = sc.nextInt();
 				}
-				
+
 				// récupération de y
 				System.out.println("Y ?");
 				y = sc.nextInt();
@@ -236,35 +236,35 @@ public class Carte {
 					System.out.println("Y doit être compris entre 0 et "+(taille_-1)+"\nY ?");
 					y = sc.nextInt();
 				}
-				
+
 				// on ajoute le pion en (x, y)
 				ajouter = ajoutePion(x, y, joueurCourant_.getCouleur());
 				// pour le debug, on affiche la composante
 				getCase(x, y).afficheComposante();
-				
+
 				// si on ne peut pas ajouter
 				if(!ajouter)
 				{
 					System.out.println("Vous ne pouvez pas ajouter un pion ici !");
 				}
 			}
-			
+
 			// on passe au joueur suivant
 			System.out.println("Fin du tour\n");
 			joueurCourant_ = joueurCourant_.suivant();
-			
+
 			// on teste si le jeu est fini
 			enCours = !finDuJeu();
 			ajouter = false;
 		}
 	}
-	
+
 	// retourne faux pour le moment
 	public boolean finDuJeu()
 	{
 		return false;
 	}
-	
+
 	/**
 	 * Accesseur de la case aux coordonnées données
 	 * @param x la première coordonnée
