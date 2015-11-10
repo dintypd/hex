@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 // mail: benjamin.le-clere@etu.univ-nantes.fr
 
@@ -296,7 +297,10 @@ public class Carte {
 			{
 				if(voisin1 != voisin2)
 				{
-					if(voisin1.classe() != voisin2.classe() && voisin1.getCouleur() == voisin2.getCouleur())
+					if(voisin1.classe() != voisin2.classe() && 
+					   voisin1.getCouleur() == voisin2.getCouleur() && 
+					   voisin1.getCouleur() != 0 && 
+					   voisin2.getCouleur() != 0)
 					{
 						return true;
 					}
@@ -305,5 +309,44 @@ public class Carte {
 		}
 		
 		return false;
+	}
+	
+	public int calculeDistance(int x1, int y1, int x2, int y2)
+	{
+		Case c1 = getCase(x1, y1);
+		Case c2 = getCase(x2, y2);
+		
+		TreeSet<Case> traites = new TreeSet<Case>();
+		traites.add(c1);
+		
+		return calculeDistanceRec(c1, c2, traites);
+	}
+	
+	public int calculeDistanceRec(Case c1, Case c2, TreeSet<Case> traites)
+	{
+		if(c1 == c2)
+		{
+			return 0;
+		}
+		else
+		{
+			int distance = 50000;
+			ArrayList<Case> voisins = getVoisins(c1);
+			
+			for(Case voisin : voisins)
+			{
+				if(!traites.contains(voisin))
+				{
+					traites.add(voisin);
+					int distVoisin = calculeDistanceRec(voisin, c2, traites);
+					if(distVoisin < distance)
+					{
+						distance = distVoisin;
+					}
+				}
+			}
+			
+			return 1+distance;
+		}
 	}
 }

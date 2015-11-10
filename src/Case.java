@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 
-public class Case {
+public class Case implements Comparable<Case>{
 	private int x_;
 	private int y_;
 	private int couleur_;
@@ -201,5 +201,32 @@ public class Case {
 		}
 
 		return acc;
+	}
+
+	@Override
+	public int compareTo(Case o) {
+		if(x_ > o.getX())
+		{
+			return 1;
+		}
+		else if(x_ == o.getX())
+		{
+			if(y_ > o.getY())
+			{
+				return 1;
+			}
+			else if(y_ < o.getY())
+			{
+				return -1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			return -1;
+		}
 	}
 }
