@@ -149,12 +149,10 @@ public class Carte {
 		{
 			// voisin gauche
 			voisins.add(getCase(c.getX()-1, c.getY()));
-			//voisins.add(carte_.get(c.getX()-1).get(c.getY()));
 			if(c.getY() != 0)
 			{
 				// voisin haut gauche
 				voisins.add(getCase(c.getX(), c.getY()-1));
-				//voisins.add(carte_.get(c.getX()).get(c.getY()-1));
 				hg = true;
 			}
 			if(c.getY() != taille_-1)
@@ -162,8 +160,6 @@ public class Carte {
 				// voisin bas gauche, bas droite
 				voisins.add(getCase(c.getX()-1, c.getY()+1));
 				voisins.add(getCase(c.getX(), c.getY()+1));
-				//voisins.add(carte_.get(c.getX()-1).get(c.getY()+1));
-				//voisins.add(carte_.get(c.getX()).get(c.getY()+1));
 				bd = true;
 			}
 		}
@@ -171,16 +167,13 @@ public class Carte {
 		{
 			// voisin droite
 			voisins.add(getCase(c.getX()+1, c.getY()));
-			//voisins.add(carte_.get(c.getX()+1).get(c.getY()));
 			if(c.getY() != 0)
 			{
 				// voisin haut droite haut gauche
 				voisins.add(getCase(c.getX()+1, c.getY()-1));
-				//voisins.add(carte_.get(c.getX()+1).get(c.getY()-1));
 				if(!hg)
 				{
 					voisins.add(getCase(c.getX(), c.getY()-1));
-					//voisins.add(carte_.get(c.getX()).get(c.getY()-1));
 				}
 			}
 			if(c.getY() != taille_-1)
@@ -189,7 +182,6 @@ public class Carte {
 				if(!bd)
 				{
 					voisins.add(getCase(c.getX(), c.getY()+1));
-					//voisins.add(carte_.get(c.getX()).get(c.getY()+1));
 				}
 			}
 		}
@@ -239,8 +231,6 @@ public class Carte {
 
 				// on ajoute le pion en (x, y)
 				ajouter = ajoutePion(x, y, joueurCourant_.getCouleur());
-				// pour le debug, on affiche la composante
-				getCase(x, y).afficheComposante();
 
 				// si on ne peut pas ajouter
 				if(!ajouter)
@@ -251,18 +241,26 @@ public class Carte {
 
 			// on passe au joueur suivant
 			System.out.println("Fin du tour\n");
-			joueurCourant_ = joueurCourant_.suivant();
+			
+			// on teste si le jeu est finit
+			if(enCours = !finDuJeu())
+			{
+				joueurCourant_ = joueurCourant_.suivant();
+			}
 
 			// on teste si le jeu est fini
-			enCours = !finDuJeu();
 			ajouter = false;
 		}
+		
+		// on affiche le gagnant et le plateau final
+		System.out.println(joueurCourant_+" a gagné !");
+		afficher();
 	}
 
 	// retourne faux pour le moment
 	public boolean finDuJeu()
 	{
-		return false;
+		return existeCheminCote();
 	}
 
 	/**
@@ -274,5 +272,38 @@ public class Carte {
 	public Case getCase(int x, int y)
 	{
 		return carte_.get(y).get(x);
+	}
+	
+	public boolean existeCheminCase(Case a, Case b)
+	{
+		return a.classe() == b.classe();
+	}
+	
+	public boolean existeCheminCote()
+	{
+		return existeCheminCase(getCase(0, 1), getCase(taille_-1, 1)) ||
+			   existeCheminCase(getCase(1, 0), getCase(1, taille_-1));
+	}
+	
+	public boolean relieComposantes(int x, int y)
+	{
+		Case c = getCase(x, y);
+		ArrayList<Case> voisins = getVoisins(c);
+		
+		for(Case voisin1 : voisins)
+		{
+			for(Case voisin2 : voisins)
+			{
+				if(voisin1 != voisin2)
+				{
+					if(voisin1.classe() != voisin2.classe() && voisin1.getCouleur() == voisin2.getCouleur())
+					{
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 }
