@@ -317,13 +317,15 @@ public class Carte {
 		Case c2 = getCase(x2, y2);
 		
 		TreeSet<Case> traites = new TreeSet<Case>();
-		traites.add(c1);
 		
 		return calculeDistanceRec(c1, c2, traites);
 	}
 	
 	public int calculeDistanceRec(Case c1, Case c2, TreeSet<Case> traites)
 	{
+		traites.add(c1);
+		ArrayList<Case> voisins = getVoisins(c1);
+		
 		if(c1 == c2)
 		{
 			return 0;
@@ -331,20 +333,24 @@ public class Carte {
 		else
 		{
 			int distance = 50000;
-			ArrayList<Case> voisins = getVoisins(c1);
+			
+			TreeSet<Case> traites2 = new TreeSet<Case>(traites);
+			traites2.addAll(voisins);
 			
 			for(Case voisin : voisins)
 			{
 				if(!traites.contains(voisin))
 				{
 					traites.add(voisin);
-					int distVoisin = calculeDistanceRec(voisin, c2, traites);
+					int distVoisin = calculeDistanceRec(voisin, c2, traites2);
 					if(distVoisin < distance)
 					{
 						distance = distVoisin;
 					}
 				}
 			}
+			
+			//traites.addAll(traites2);
 			
 			return 1+distance;
 		}

@@ -7,6 +7,7 @@ public class Case implements Comparable<Case>{
 	private int couleur_;
 	private Case representant_;
 	private ArrayList<Case> fils_;
+		// 
         public static final String DEFAUT = "\u001B[0m";
         public static final String ROUGE = "\u001B[31m";
         public static final String BLEU = "\u001B[34m";
