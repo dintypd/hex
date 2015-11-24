@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeSet;
 
@@ -311,48 +313,90 @@ public class Carte {
 		return false;
 	}
 	
-	public int calculeDistance(int x1, int y1, int x2, int y2)
+	public Couple<Integer, Map<Case, Case>> calculeDistanceChemin(int x1, int y1, int x2, int y2)
 	{
-		Case c1 = getCase(x1, y1);
-		Case c2 = getCase(x2, y2);
+		Case source = getCase(x1, y1);
+		Case cible = getCase(x2, y2);
 		
-		TreeSet<Case> traites = new TreeSet<Case>();
+		ArrayList<Case> nonTraites = new ArrayList<Case>();
 		
-		return calculeDistanceRec(c1, c2, traites);
-	}
-	
-	public int calculeDistanceRec(Case c1, Case c2, TreeSet<Case> traites)
-	{
-		traites.add(c1);
-		ArrayList<Case> voisins = getVoisins(c1);
+		Map<Case, Integer> dist = new HashMap<Case, Integer>();
+		Map<Case, Case> prev = new HashMap<Case, Case>();
 		
-		if(c1 == c2)
+		for(int i = 0; i < taille_;  ++i)
 		{
-			return 0;
-		}
-		else
-		{
-			int distance = 50000;
-			
-			TreeSet<Case> traites2 = new TreeSet<Case>(traites);
-			traites2.addAll(voisins);
-			
-			for(Case voisin : voisins)
+			for(int j = 0; j < taille_; ++j)
 			{
-				if(!traites.contains(voisin))
+				if(getCase(i, j).getCouleur() == source.getCouleur() || getCase(i, j).getCouleur() == 0)
 				{
-					traites.add(voisin);
-					int distVoisin = calculeDistanceRec(voisin, c2, traites2);
-					if(distVoisin < distance)
+					dist.put(getCase(i, j), 50000);					
+					nonTraites.add(getCase(i, j));
+				}
+			}
+		}
+		
+		dist.put(source, 0);
+		
+		Case courant;
+		boolean trouve = false;
+		
+		while(!nonTraites.isEmpty() && !trouve)
+		{
+			courant = nonTraites.get(0);
+			for(Case c : nonTraites)
+			{
+				if(dist.get(c) < dist.get(courant))
+					courant = c;
+			}
+			nonTraites.remove(courant);
+			
+			if(courant == cible)
+			{
+				trouve = true;
+			}
+			else
+			{
+				int alt;
+				
+				for(Case voisin : getVoisins(courant))
+				{
+					if(nonTraites.contains(voisin))
 					{
-						distance = distVoisin;
+						if(voisin.getCouleur() == 0)
+						{
+							alt = dist.get(courant) + 1;
+						}
+						else
+						{
+							alt = dist.get(courant);
+						}
+						if(alt < dist.get(voisin))
+						{
+							dist.put(voisin, alt);
+							prev.put(voisin, courant);
+						}
 					}
 				}
 			}
-			
-			//traites.addAll(traites2);
-			
-			return 1+distance;
 		}
+		
+		return new Couple<Integer, Map<Case, Case>>(dist.get(cible), prev);
+	}
+	
+	public int calculeDistance(int x1, int y1, int x2, int y2)
+	{
+		return calculeDistanceChemin(x1, y1, x2, y2).getPremier();
+	}
+	
+	public String affichePath(int x1, int y1, int x2, int y2)
+	{
+		Map<Case, Case> map = calculeDistanceChemin(x1, y1, x2, y2).getSecond();
+		
+		String acc = "";
+		for(Map.Entry<Case, Case> couple : map.entrySet())
+		{
+			acc += couple.getKey().affichePosition()+"\n";
+		}
+		return acc;
 	}
 }

@@ -102,11 +102,12 @@ public class Case implements Comparable<Case>{
 	 * @return une string correspondant à la couleur du pion
 	 */
 	public String toString(){
-          if (couleur_==1){
+          /*if (couleur_==1){
             return BLEU+couleur_+DEFAUT;}
           else if (couleur_==2){
               return ROUGE+couleur_+DEFAUT;}
-          else return couleur_+"";
+          else return couleur_+"";*/
+		return couleur_+"";
 	}
 
 	/**
@@ -229,5 +230,15 @@ public class Case implements Comparable<Case>{
 		{
 			return -1;
 		}
+	}
+	
+	public int distance(Case c) {
+		int temp = Math.max(
+			     Math.abs(c.getY() - this.y_),     
+			     Math.abs(c.getX() - this.x_));
+		
+		return Math.max(temp,
+			     Math.abs((c.getX() - c.getY())*-1 - (this.x_ - this.y_)*-1));
+			
 	}
 }
