@@ -102,12 +102,14 @@ public class Case implements Comparable<Case>{
 	 * @return une string correspondant à la couleur du pion
 	 */
 	public String toString(){
-          /*if (couleur_==1){
-            return BLEU+couleur_+DEFAUT;}
-          else if (couleur_==2){
-              return ROUGE+couleur_+DEFAUT;}
-          else return couleur_+"";*/
-		return couleur_+"";
+	    if (couleur_ ==0){
+		return ".";
+	    }
+	    else if (couleur_==1){
+		return BLEU+couleur_+DEFAUT;}
+	    else if (couleur_==2){
+		return ROUGE+couleur_+DEFAUT;}
+	    else return couleur_+"";
 	}
 
 	/**

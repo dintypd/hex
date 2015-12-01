@@ -12,6 +12,8 @@ public class Carte {
 	private Joueur joueurCourant_; // le joueur qui joue actuellement
 	private ArrayList<Joueur> joueurs_;
 
+    public static final String CLEAR = "\033[2J\033[;H";
+
 	/**
 	 * Constructeur qui initialise le plateau
 	 * @param taille la taille du plateau, qui est carré
@@ -91,6 +93,7 @@ public class Carte {
 	 * Méthode d'affichage du plateau de jeu
 	 */
 	public void afficher(){
+	    System.out.println(CLEAR);
 		String acc;
 		int i = 0;
 		// pour chaque ligne:
