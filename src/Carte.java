@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.TreeSet;
+import java.util.Stack;
 
 // mail: benjamin.le-clere@etu.univ-nantes.fr
 
@@ -313,7 +313,7 @@ public class Carte {
 		return false;
 	}
 	
-	public Couple<Integer, Map<Case, Case>> calculeDistanceChemin(int x1, int y1, int x2, int y2)
+	public Couple<Integer, Stack<Case>> calculeDistanceChemin(int x1, int y1, int x2, int y2)
 	{
 		Case source = getCase(x1, y1);
 		Case cible = getCase(x2, y2);
@@ -380,7 +380,17 @@ public class Carte {
 			}
 		}
 		
-		return new Couple<Integer, Map<Case, Case>>(dist.get(cible), prev);
+		Stack<Case> chemin = new Stack<Case>();
+		
+		while(prev.containsKey(cible))
+		{
+			chemin.add(cible);
+			cible = prev.get(cible);
+		}
+		
+		chemin.add(cible);
+		
+		return new Couple<Integer, Stack<Case>>(dist.get(cible), chemin);
 	}
 	
 	public int calculeDistance(int x1, int y1, int x2, int y2)
@@ -390,12 +400,12 @@ public class Carte {
 	
 	public String affichePath(int x1, int y1, int x2, int y2)
 	{
-		Map<Case, Case> map = calculeDistanceChemin(x1, y1, x2, y2).getSecond();
+		Stack<Case> chemin = calculeDistanceChemin(x1, y1, x2, y2).getSecond();
 		
 		String acc = "";
-		for(Map.Entry<Case, Case> couple : map.entrySet())
+		for(Case c : chemin)
 		{
-			acc += couple.getKey().affichePosition()+"\n";
+			acc += c.affichePosition()+"\n";
 		}
 		return acc;
 	}
