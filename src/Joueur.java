@@ -1,4 +1,3 @@
-
 public class Joueur {
 	private int _couleur;
 	private String _nom;
