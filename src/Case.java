@@ -108,7 +108,7 @@ public class Case implements Comparable<Case>{
 	    else if (couleur_==1){
 		return "_"+VERT+couleur_+DEFAUT+"_";}
 	    else if (couleur_==2){
-		return ROUGE+"_"+couleur_+"_"+DEFAUT;}
+		return "_"+ROUGE+couleur_+DEFAUT+"_";}
 	    else return " "+couleur_+" ";
 	}
 

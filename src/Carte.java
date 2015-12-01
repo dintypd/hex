@@ -94,9 +94,10 @@ public class Carte {
 	 */
 	public void afficher(){
 	    System.out.println(CLEAR);
-	    String acc, acck;
+	    String acc, acck, espace;
 	    int i = 0;
-	    acck = "     ";
+	    acck = "        ";
+	    espace = "";
 		for(int k = 1; k < taille_ -1 ; ++k){
 		    if (k<10)
 			acck += " "+k+"  ";		    
@@ -112,16 +113,20 @@ public class Carte {
 			{
 			    acc += "  ";
 			}
-			acc += ((i>0 && i < taille_-1)?i:"")+((i>9)?"":" ")+" |";
+			acc += ((i==0 || i == taille_-1)?" ":"")+((i>0 && i < taille_-1)?i:"")+((i>9)?"":" ")+" |";
 			// pour chaque case de cette ligne
 			for(Case c : l){
                           acc += c+"|";
 			}
 			i += 1;
 			// on affiche la ligne
-			System.out.println(acc);
-		}
-		System.out.println("         "+acck);
+			System.out.println(acc+"  "+((i==1 || i == taille_)?"":(i-1)));
+		}		
+			for(int j = 0; j < i-1; ++j)
+			{
+			    espace += "  ";
+			}
+		System.out.println(espace+acck);
 	}
 
 	/**
