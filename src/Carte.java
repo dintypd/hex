@@ -94,17 +94,25 @@ public class Carte {
 	 */
 	public void afficher(){
 	    System.out.println(CLEAR);
-		String acc;
-		int i = 0;
+	    String acc, acck;
+	    int i = 0;
+	    acck = "     ";
+		for(int k = 1; k < taille_ -1 ; ++k){
+		    if (k<10)
+			acck += " "+k+"  ";		    
+		    else acck += ""+k+"  ";
+		    }
+	
+		System.out.println(acck);
 		// pour chaque ligne:
 		for(ArrayList<Case> l : carte_){
 			acc = "";
 			// on ajoute le nombre d'espaces nécessaires pour afficher en décalé
 			for(int j = 0; j < i; ++j)
 			{
-				acc += " ";
+			    acc += "  ";
 			}
-			acc += "|";
+			acc += ((i>0 && i < taille_-1)?i:"")+((i>9)?"":" ")+" |";
 			// pour chaque case de cette ligne
 			for(Case c : l){
                           acc += c+"|";
@@ -113,6 +121,7 @@ public class Carte {
 			// on affiche la ligne
 			System.out.println(acc);
 		}
+		System.out.println("         "+acck);
 	}
 
 	/**

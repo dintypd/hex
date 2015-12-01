@@ -10,7 +10,7 @@ public class Case implements Comparable<Case>{
 		// 
         public static final String DEFAUT = "\u001B[0m";
         public static final String ROUGE = "\u001B[31m";
-        public static final String BLEU = "\u001B[34m";
+        public static final String VERT = "\u001B[32m";
 
 	/**
 	 * Constructeur d'une case, la couleur est mise à 0 par défault
@@ -103,13 +103,13 @@ public class Case implements Comparable<Case>{
 	 */
 	public String toString(){
 	    if (couleur_ ==0){
-		return ".";
+		return "_._";
 	    }
 	    else if (couleur_==1){
-		return BLEU+couleur_+DEFAUT;}
+		return "_"+VERT+couleur_+DEFAUT+"_";}
 	    else if (couleur_==2){
-		return ROUGE+couleur_+DEFAUT;}
-	    else return couleur_+"";
+		return ROUGE+"_"+couleur_+"_"+DEFAUT;}
+	    else return " "+couleur_+" ";
 	}
 
 	/**
