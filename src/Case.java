@@ -220,6 +220,7 @@ public class Case{
 	
 	/**
 	 * Retourne la distance entre deux cases "à vol d'oiseau"
+	 */
 	public int distance(Case c) {
 		int temp = Math.max(
 			     Math.abs(c.getY() - this.y_),     

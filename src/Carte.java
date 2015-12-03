@@ -336,7 +336,7 @@ public class Carte {
 				// on n'ajoute dans le "graphe" seulement les cases de même couleur que la cible et la source, ou de couleur neutre
 				if(getCase(i, j).getCouleur() == source.getCouleur() || getCase(i, j).getCouleur() == 0)
 				{
-					dist.put(getCase(i, j), 50000);					
+					dist.put(getCase(i, j), taille_*taille_);					
 					nonTraites.add(getCase(i, j));
 				}
 			}
