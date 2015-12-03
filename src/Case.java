@@ -1,13 +1,21 @@
 import java.util.ArrayList;
 
-
-public class Case implements Comparable<Case>{
+/**
+ * Classe Case
+ * 
+ * Cette classe s'occupe de la gestion des cases, notamment de la structure de Classe-Union
+ */
+public class Case{
+	// ses coordonnées
 	private int x_;
 	private int y_;
+	// sa couleur, 0 par défaut
 	private int couleur_;
+	// le représentant de sa classe
 	private Case representant_;
+	// ses descendants
 	private ArrayList<Case> fils_;
-		// 
+		// couleurs utiles seulement à l'affichage
         public static final String DEFAUT = "\u001B[0m";
         public static final String ROUGE = "\u001B[31m";
         public static final String VERT = "\u001B[32m";
@@ -89,12 +97,7 @@ public class Case implements Comparable<Case>{
 	 */
 	public String affichePosition()
 	{
-		String descendants = "";
-		for(Case fils : fils_)
-		{
-			descendants += fils.affichePosition()+";";
-		}
-		return "["+x_+";"+y_+"] ("+descendants+")";
+		return "["+x_+";"+y_+"]";
 	}
 
 	/**
@@ -125,11 +128,30 @@ public class Case implements Comparable<Case>{
 	}
 
 	/**
+	 * Modificateur du représentant de la case
+	 * @param c une case, nouveau représentant de "this"
+	 */
+	public void setClasse(Case c)
+	{
+		representant_ = c;
+		c.addFils(this);
+	}
+
+	/**
+	 * Ajoute un fils à la case c
+	 */
+	public void addFils(Case c)
+	{
+		fils_.add(c);
+	}
+	
+	/**
 	 * Accesseur du représentant de la case, utilise la compression des chemins
 	 * @return une case représentante de la classe qui contient "this"
 	 */
 	public Case classe()
 	{
+		// si le représentant d'une case est a null, alors cette case est représentant
 		if(representant_ == null)
 		{
 			return this;
@@ -141,21 +163,6 @@ public class Case implements Comparable<Case>{
 	}
 
 	/**
-	 * Modificateur du représentant de la case
-	 * @param c une case, nouveau représentant de "this"
-	 */
-	public void setClasse(Case c)
-	{
-		representant_ = c;
-		c.addFils(this);
-	}
-
-	public void addFils(Case c)
-	{
-		fils_.add(c);
-	}
-
-	/**
 	 * Méthode qui réalise l'union des classes de "this" et voisin en utilisant l'union par rang
 	 * @param voisin une case membre de la classe que l'on veut unir à celle de "this"
 	 */
@@ -163,8 +170,11 @@ public class Case implements Comparable<Case>{
 	{
 		Case repThis = classe();
 		Case repVoisin = voisin.classe();
+		
+		// si les deux classes dont on veut faire l'union on le même représentant, on ne fait rien
 		if(repThis != repVoisin)
 		{
+			// on réalise la compression des chemins
 			if(repThis.nombreDeDescendants() > repVoisin.nombreDeDescendants())
 			{
 				repVoisin.setClasse(repThis);
@@ -181,6 +191,7 @@ public class Case implements Comparable<Case>{
 	 */
 	public void afficheComposante()
 	{
+		// on affiche la composante du représentant de cette classe
 		if(representant_ == null)
 		{
 			System.out.println(parcoursProfondeur());
@@ -206,34 +217,9 @@ public class Case implements Comparable<Case>{
 
 		return acc;
 	}
-
-	@Override
-	public int compareTo(Case o) {
-		if(x_ > o.getX())
-		{
-			return 1;
-		}
-		else if(x_ == o.getX())
-		{
-			if(y_ > o.getY())
-			{
-				return 1;
-			}
-			else if(y_ < o.getY())
-			{
-				return -1;
-			}
-			else
-			{
-				return 0;
-			}
-		}
-		else
-		{
-			return -1;
-		}
-	}
 	
+	/**
+	 * Retourne la distance entre deux cases "à vol d'oiseau"
 	public int distance(Case c) {
 		int temp = Math.max(
 			     Math.abs(c.getY() - this.y_),     

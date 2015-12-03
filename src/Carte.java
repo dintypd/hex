@@ -4,8 +4,12 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Stack;
 
-// mail: benjamin.le-clere@etu.univ-nantes.fr
-
+/**
+ * Classe Carte
+ * 
+ * Cette classe s'occupe de la gestion du plateau de jeu. Elle contient entre autre
+ * la liste des joueurs, ainsi que la liste des cases
+ */
 public class Carte {
 	private ArrayList<ArrayList<Case>> carte_;
 	private int taille_; // la taille de la carte
@@ -91,6 +95,7 @@ public class Carte {
 
 	/**
 	 * Méthode d'affichage du plateau de jeu
+	 * Les blocs AFFICHAGE COORDONEES ne servent qu'à afficher les coordonnées x et y en haut, bas, droite, gauche du plateau
 	 */
 	public void afficher(){
 	    System.out.println(CLEAR);
@@ -98,22 +103,30 @@ public class Carte {
 	    int i = 0;
 	    acck = "        ";
 	    espace = "";
+	    
+	    // AFFICHAGE COORDONNEES
 		for(int k = 1; k < taille_ -1 ; ++k){
 		    if (k<10)
 			acck += " "+k+"  ";		    
 		    else acck += ""+k+"  ";
 		    }
-	
+		
 		System.out.println(acck);
+		//////////////////////////
+		
 		// pour chaque ligne:
 		for(ArrayList<Case> l : carte_){
 			acc = "";
+			
 			// on ajoute le nombre d'espaces nécessaires pour afficher en décalé
 			for(int j = 0; j < i; ++j)
 			{
 			    acc += "  ";
 			}
-			acc += ((i==0 || i == taille_-1)?" ":"")+((i>0 && i < taille_-1)?i:"")+((i>9)?"":" ")+" |";
+			
+			acc +=  ((i==0 || i == taille_-1)?" ":"")+
+					((i>0 && i < taille_-1)?i:"")+
+					((i>9)?"":" ")+" |";
 			// pour chaque case de cette ligne
 			for(Case c : l){
                           acc += c+"|";
@@ -121,12 +134,16 @@ public class Carte {
 			i += 1;
 			// on affiche la ligne
 			System.out.println(acc+"  "+((i==1 || i == taille_)?"":(i-1)));
-		}		
+			/////////////////////////////
+		}	
+		
+		// AFFICHAGE COORDONNEES	
 			for(int j = 0; j < i-1; ++j)
 			{
 			    espace += "  ";
 			}
 		System.out.println(espace+acck);
+		/////////////////////////
 	}
 
 	/**
@@ -137,13 +154,19 @@ public class Carte {
 	 */
 	public boolean ajoutePion(int x, int y, int couleur)
 	{
+		// on récupére la case ciblée
 		Case c = getCase(x, y);
+		
+		// si celle ci est déjà associée à un joueur, on ne peux pas l'ajouter
 		if(c.getCouleur() != 0)
 		{
 			return false;
 		}
+		
+		// sinon on lui assigne la couleur du joueur
 		c.setCouleur(couleur);
 
+		// et on réalise l'union avec tous ses voisin de même couleur
 		ArrayList<Case> voisins = getVoisins(c);
 		for(Case voisin : voisins)
 		{
@@ -152,6 +175,8 @@ public class Carte {
 				c.union(voisin);
 			}
 		}
+		
+		// enfin on retourne que l'ajout s'est bien passé
 		return true;
 	}
 
@@ -209,9 +234,14 @@ public class Carte {
 		return voisins;
 	}
 
-	// retourne faux pour le moment
+	/**
+	 * Méthode qui teste si l'un des joueurs à gagné
+	 * @return vrai si la partie est finie, faux sinon
+	 */
 	public boolean finDuJeu()
 	{
+		// le moyen rapide de savoir si un des joueurs à gagner est 
+		// de savoir si il existe un chemin entre deux cotés du plateau
 		return existeCheminCote();
 	}
 
@@ -226,22 +256,41 @@ public class Carte {
 		return carte_.get(y).get(x);
 	}
 	
+	/**
+	 * Méthode qui teste si il existe un chemin entre deux cases
+	 * @return vrai s'il existe un chemin entre a et b
+	 */
 	public boolean existeCheminCase(Case a, Case b)
 	{
+		// il faut juste tester si a et b sont dans la même classe
 		return a.classe() == b.classe();
 	}
 	
+	/**
+	 * Méthode qui teste si il existe un chemin entre deux cotés
+	 */
 	public boolean existeCheminCote()
 	{
+		// il faut juste tester si il existe un chemin entre les composantes droite et gauche, ou haut et bas
 		return existeCheminCase(getCase(0, 1), getCase(taille_-1, 1)) ||
 			   existeCheminCase(getCase(1, 0), getCase(1, taille_-1));
 	}
 	
+	/**
+	 * Méthode qui tester si l'ajout d'un pion en x, y relie deux composantes
+	 * @param x la coordonnée x
+	 * @param y la coordonnee y
+	 * @return vrai si le pion(x, y) relie deux composantes
+	 */
 	public boolean relieComposantes(int x, int y)
 	{
+		// on récupére la case ciblée
 		Case c = getCase(x, y);
+		
+		// on récupére la liste de ses voisins
 		ArrayList<Case> voisins = getVoisins(c);
 		
+		// pour chaque voisins, on cherche s'il existe un autre voisin de la même couleur
 		for(Case voisin1 : voisins)
 		{
 			for(Case voisin2 : voisins)
@@ -258,24 +307,33 @@ public class Carte {
 				}
 			}
 		}
-		
+	
 		return false;
 	}
 	
+	/**
+	 * Méthode qui retourne un couple contenant:
+	 * 	- un entier, correspondant à la longueur du plus court chemin entre deux cases dont les coordonnées sont en paramètre
+	 * 	- une pile de cases, correspondante a ce chemin
+	 * Cette méthode implémente l'algorithme de Dijkstra
+	 */
 	public Couple<Integer, Stack<Case>> calculeDistanceChemin(int x1, int y1, int x2, int y2)
 	{
+		// on récupère les deux cases qui nous intéressent
 		Case source = getCase(x1, y1);
 		Case cible = getCase(x2, y2);
 		
-		ArrayList<Case> nonTraites = new ArrayList<Case>();
-		
+		// on initialise les structures qui nous serviront 
+		ArrayList<Case> nonTraites = new ArrayList<Case>();	
 		Map<Case, Integer> dist = new HashMap<Case, Integer>();
 		Map<Case, Case> prev = new HashMap<Case, Case>();
 		
+		// on remplitces structures
 		for(int i = 0; i < taille_;  ++i)
 		{
 			for(int j = 0; j < taille_; ++j)
 			{
+				// on n'ajoute dans le "graphe" seulement les cases de même couleur que la cible et la source, ou de couleur neutre
 				if(getCase(i, j).getCouleur() == source.getCouleur() || getCase(i, j).getCouleur() == 0)
 				{
 					dist.put(getCase(i, j), 50000);					
@@ -289,16 +347,20 @@ public class Carte {
 		Case courant;
 		boolean trouve = false;
 		
+		// tant que toutes les cases n'ont pas été traitées
 		while(!nonTraites.isEmpty() && !trouve)
 		{
+			// on recherche la case dont la valeur associée est minimum dans la map dist
 			courant = nonTraites.get(0);
 			for(Case c : nonTraites)
 			{
 				if(dist.get(c) < dist.get(courant))
 					courant = c;
 			}
+			// on supprime cette case du tableau des cases non traitées
 			nonTraites.remove(courant);
 			
+			// si on est sur la case cible, alors il s'agit de la dernière itération
 			if(courant == cible)
 			{
 				trouve = true;
@@ -307,6 +369,10 @@ public class Carte {
 			{
 				int alt;
 				
+				// pour chacun de ses voisins, on cherche la distance de voisin a courant:
+				//  -si voisin est de la même couleur, la distance vaut 0, 
+				//  -sinon 1
+				// bien entendu, on ne traite pas les voisins de couleur différente
 				for(Case voisin : getVoisins(courant))
 				{
 					if(nonTraites.contains(voisin))
@@ -331,6 +397,7 @@ public class Carte {
 		
 		int distance = dist.get(cible);
 		
+		// enfin, on récupère le chemin
 		Stack<Case> chemin = new Stack<Case>();
 		
 		while(prev.containsKey(cible))
@@ -341,14 +408,21 @@ public class Carte {
 		
 		chemin.add(cible);
 		
+		// on construit le couple et on le retourne
 		return new Couple<Integer, Stack<Case>>(distance, chemin);
 	}
 	
+	/**
+	 * Méthode qui retourne la distance entre les cases dont les coordonnées sont en paramètres
+	 */
 	public int calculeDistance(int x1, int y1, int x2, int y2)
 	{
 		return calculeDistanceChemin(x1, y1, x2, y2).getPremier();
 	}
 	
+	/**
+	 * Méthode qui affiche le chemin, deuxième composante du couple retourné par calculeDistanceChemin
+	 */
 	public String affichePath(int x1, int y1, int x2, int y2)
 	{
 		Stack<Case> chemin = calculeDistanceChemin(x1, y1, x2, y2).getSecond();
@@ -374,12 +448,16 @@ public class Carte {
 		// booleen qui nous dit si la partie est encore en cours
 		boolean enCours = true;
 		boolean ajouter = false;
+		
+		// on lance la boucle du jeu
 		while(enCours)
 		{
+			// affichage d'informations
 			System.out.println("Tour de "+joueurCourant_);
 			System.out.println("Ou voulez vous placer votre pion ?");
 			afficher();
 
+			// tant que le joueur n'a pas ajouté une case
 			while(!ajouter)
 			{
 
@@ -420,7 +498,7 @@ public class Carte {
 				joueurCourant_ = joueurCourant_.suivant();
 			}
 
-			// on teste si le jeu est fini
+			// on réinitialise le booleen ajouter a faux
 			ajouter = false;
 		}
 		
@@ -444,15 +522,18 @@ public class Carte {
 		boolean enCours = true;
 		boolean ajouter = false;
 		boolean ordiGagne = true;
+		
+		// on lance la boucle du jeu
 		while(enCours)
 		{
+			// affichage d'informations
 			System.out.println("Tour de "+joueurCourant_);
 			System.out.println("Ou voulez vous placer votre pion ?");
 			afficher();
 
+			// tant que le joueur n'a pas ajouté de pion
 			while(!ajouter)
 			{
-
 				// récupération de x
 				System.out.println("X ?");
 				x = sc.nextInt();
@@ -481,7 +562,7 @@ public class Carte {
 				}
 			}
 
-			// on passe au joueur suivant
+			// si le joueur n'a pas gagné, c'est a l'ordi de jouer
 			System.out.println("Fin du tour\n");
 			if(enCours = !finDuJeu())
 			{
@@ -495,7 +576,8 @@ public class Carte {
 			
 			// on teste si le jeu est finit
 			enCours = !finDuJeu();
-
+		
+			// on réinitialise le booleen ajouter a faux
 			ajouter = false;
 		}
 		
@@ -512,6 +594,9 @@ public class Carte {
 		sc.close();
 	}
 	
+	/**
+	 * Méthode qui choisit quel pion va devoir jouer l'ordinateur
+	 */
 	public void evaluerPion()
 	{
 		// distance pour que l'ordi gagne
@@ -519,8 +604,8 @@ public class Carte {
 		
 		// distance pour que le joueur gagne
 		Couple<Integer, Stack<Case>> distanceCheminJ = calculeDistanceChemin(0, 1, taille_-1, 1);
-		System.out.println(distanceCheminJ.getPremier());
-		System.out.println(distanceCheminO.getPremier());
+		
+		// en premier on test s'il faut avoir un comportement de défense
 		if(distanceCheminJ.getPremier() <= taille_/2 && distanceCheminO.getPremier() > 1)
 		{
 			Case courante = distanceCheminJ.getSecond().firstElement();
@@ -530,16 +615,14 @@ public class Carte {
 				courante = distanceCheminJ.getSecond().firstElement();
 				distanceCheminJ.getSecond().remove(0);
 			}
-			System.out.println("1");
 		}
-		else
+		else // sinon on attaque
 		{
 			Case courante = distanceCheminO.getSecond().pop();
 			while(!ajoutePion(courante.getX(), courante.getY(), 2))
 			{
 				courante = distanceCheminO.getSecond().pop();
 			}
-			System.out.println("2");
 		}
 	}
 }
