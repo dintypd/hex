@@ -15,6 +15,8 @@ public class Case{
 	private Case representant_;
 	// ses descendants
 	private ArrayList<Case> fils_;
+	// nombre de descendants
+	private int nbDescendants_;
 		// couleurs utiles seulement à l'affichage
         public static final String DEFAUT = "\u001B[0m";
         public static final String ROUGE = "\u001B[31m";
@@ -32,6 +34,7 @@ public class Case{
 		couleur_ = 0;
 		fils_ = new ArrayList<Case>();
 		representant_ = null;
+		nbDescendants_ = 0;
 	}
 
 	/**
@@ -119,12 +122,8 @@ public class Case{
 	 * Renvoie le nombre de descendants d'une case
 	 * @return le nombre de fils d'une case et des fils de ses fils, comptant la case elle-même
 	 */
-	public int nombreDeDescendants(){
-		int nbfils = 1;
-		for(Case f : fils_){
-			nbfils += f.nombreDeDescendants();
-		}
-		return nbfils + fils_.size();
+	public int getNbDescendants(){
+		return nbDescendants_;
 	}
 
 	/**
@@ -143,6 +142,7 @@ public class Case{
 	public void addFils(Case c)
 	{
 		fils_.add(c);
+		nbDescendants_ += 1 + c.getNbDescendants();
 	}
 	
 	/**
@@ -158,6 +158,7 @@ public class Case{
 		}
 		else
 		{
+			// on réalise la compression des chemins
 			return representant_ = representant_.classe();
 		}
 	}
@@ -171,18 +172,14 @@ public class Case{
 		Case repThis = classe();
 		Case repVoisin = voisin.classe();
 		
-		// si les deux classes dont on veut faire l'union on le même représentant, on ne fait rien
-		if(repThis != repVoisin)
+		// on réalise l'union par rang
+		if(repThis.getNbDescendants() > repVoisin.getNbDescendants())
 		{
-			// on réalise la compression des chemins
-			if(repThis.nombreDeDescendants() > repVoisin.nombreDeDescendants())
-			{
-				repVoisin.setClasse(repThis);
-			}
-			else
-			{
-				repThis.setClasse(repVoisin);
-			}
+			repVoisin.setClasse(repThis);
+		}
+		else
+		{
+			repThis.setClasse(repVoisin);
 		}
 	}
 

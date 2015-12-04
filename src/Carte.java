@@ -98,7 +98,6 @@ public class Carte {
 	 * Les blocs AFFICHAGE COORDONEES ne servent qu'à afficher les coordonnées x et y en haut, bas, droite, gauche du plateau
 	 */
 	public void afficher(){
-	    System.out.println(CLEAR);
 	    String acc, acck, espace;
 	    int i = 0;
 	    acck = "        ";
@@ -172,7 +171,10 @@ public class Carte {
 		{
 			if(voisin.getCouleur() == couleur)
 			{
-				c.union(voisin);
+				if(voisin.classe() != c.classe())
+				{
+					c.union(voisin);
+				}
 			}
 		}
 		
@@ -282,7 +284,7 @@ public class Carte {
 	 * @param y la coordonnee y
 	 * @return vrai si le pion(x, y) relie deux composantes
 	 */
-	public boolean relieComposantes(int x, int y)
+		public boolean relieComposantes(int x, int y)
 	{
 		// on récupére la case ciblée
 		Case c = getCase(x, y);
@@ -440,71 +442,140 @@ public class Carte {
 	 */
 	public void joueDeuxHumains()
 	{
+		System.out.println(CLEAR);
 		// on crée un scanner pour pouvoir lire ce qu'écris un joueur
 		Scanner sc = new Scanner(System.in);
-		int x;
-		int y;
+		
+		// pour récupèrer le choix du joueur
+		int choix;
 
 		// booleen qui nous dit si la partie est encore en cours
 		boolean enCours = true;
 		boolean ajouter = false;
+		boolean ordiGagne = true;
+		boolean quit = false;
 		
 		// on lance la boucle du jeu
-		while(enCours)
+		while(enCours && !quit)
 		{
-			// affichage d'informations
-			System.out.println("Tour de "+joueurCourant_);
-			System.out.println("Ou voulez vous placer votre pion ?");
+			// affichage de la carte
 			afficher();
-
-			// tant que le joueur n'a pas ajouté une case
-			while(!ajouter)
+			
+			// demander commande
+			// - 1 -> jouer
+			// - 2 -> quitter
+			// - 3 -> calculeDistance
+			// - 4 -> afficheComposante
+			System.out.println("Tour de "+joueurCourant_);
+			System.out.println("Choisissez:");
+			System.out.println(" 1: Jouer");
+			System.out.println(" 2: Quitter");
+			System.out.println(" 3: CalculeDistance");
+			System.out.println(" 4: afficheComposante");
+			
+			choix = demanderValeur(0, 5, sc);
+			if(choix == 1)
 			{
+				System.out.println("Ou voulez vous placer votre pion ?");
+				
+				int x, y;
+			
+				// tant que le joueur n'a pas ajouté de pion
+				while(!ajouter)
+				{
+					// récupération de x
+					System.out.println("X ?");
+					x = demanderValeur(0, taille_-1, sc);
 
+					// récupération de y
+					System.out.println("Y ?");
+					y = demanderValeur(0, taille_-1, sc);
+
+					// on ajoute le pion en (x, y)
+					ajouter = ajoutePion(x, y, joueurCourant_.getCouleur());
+
+					// si on ne peut pas ajouter
+					if(!ajouter)
+					{
+						System.out.println("Vous ne pouvez pas ajouter un pion ici !");
+					}
+				}
+				System.out.println(CLEAR);
+			
+				// on teste si le jeu est finit
+				if(enCours = !finDuJeu())
+				{
+					joueurCourant_ = joueurCourant_.suivant();
+				}
+			
+				// on réinitialise le booleen ajouter a faux
+				ajouter = false;
+			}
+			else if(choix == 2)
+			{
+				quit = true;
+			}
+			else if(choix == 3)
+			{
+				int x1, y1, x2, y2;
+				
+				// récupération de x1
+				System.out.println("X1 ?");
+				x1 = demanderValeur(-1, taille_, sc);
+
+				// récupération de y1
+				System.out.println("Y1 ?");
+				y1 = demanderValeur(-1, taille_, sc);
+				
+				// récupération de x2
+				System.out.println("X2 ?");
+				x2 = demanderValeur(-1, taille_, sc);
+
+				// récupération de y2
+				System.out.println("Y2 ?");
+				y2 = demanderValeur(-1, taille_, sc);
+				
+				System.out.println(CLEAR);
+				System.out.println("Distance : "+calculeDistanceChemin(x1, y1, x2, y2).getPremier());
+			}
+			else
+			{
+				int x, y;
 				// récupération de x
 				System.out.println("X ?");
-				x = sc.nextInt();
-				while(x < 0 || x >= taille_)
-				{
-					System.out.println("X doit être compris entre 0 et "+(taille_-1)+"\nX ?");
-					x = sc.nextInt();
-				}
+				x = demanderValeur(-1, taille_, sc);
 
 				// récupération de y
 				System.out.println("Y ?");
-				y = sc.nextInt();
-				while(y < 0 || y >= taille_)
-				{
-					System.out.println("Y doit être compris entre 0 et "+(taille_-1)+"\nY ?");
-					y = sc.nextInt();
-				}
-
-				// on ajoute le pion en (x, y)
-				ajouter = ajoutePion(x, y, joueurCourant_.getCouleur());
-
-				// si on ne peut pas ajouter
-				if(!ajouter)
-				{
-					System.out.println("Vous ne pouvez pas ajouter un pion ici !");
-				}
+				y = demanderValeur(-1, taille_, sc);
+				
+				System.out.println(CLEAR);
+				System.out.print("Composante : ");
+				getCase(x, y).afficheComposante();
 			}
-
-			// on passe au joueur suivant
-			System.out.println("Fin du tour\n");
-			
-			// on teste si le jeu est finit
-			if(enCours = !finDuJeu())
-			{
-				joueurCourant_ = joueurCourant_.suivant();
-			}
-
-			// on réinitialise le booleen ajouter a faux
-			ajouter = false;
 		}
 		
-		// on affiche le gagnant et le plateau final
-		System.out.println(joueurCourant_+" a gagné !");
-		afficher();
+		
+		if(!quit)
+		{
+			System.out.println(CLEAR);
+			// on affiche le gagnant et le plateau final
+			afficher();
+			if(ordiGagne)
+			{
+				System.out.println("Ordi à gagné !");
+			}
+			else
+			{
+				System.out.println(joueurCourant_+" a gagné !");
+			}
+		}
+		else
+		{
+			System.out.println(CLEAR);
+			System.out.println(joueurCourant_+" a quitté la partie.");
+		}
+		
 		sc.close();
 	}
 	
@@ -513,85 +584,162 @@ public class Carte {
 	 */
 	public void joueOrdiHumains()
 	{
+		System.out.println(CLEAR);
 		// on crée un scanner pour pouvoir lire ce qu'écris un joueur
 		Scanner sc = new Scanner(System.in);
-		int x;
-		int y;
+		
+		// pour récupèrer le choix du joueur
+		int choix;
 
 		// booleen qui nous dit si la partie est encore en cours
 		boolean enCours = true;
 		boolean ajouter = false;
 		boolean ordiGagne = true;
+		boolean quit = false;
 		
 		// on lance la boucle du jeu
-		while(enCours)
+		while(enCours && !quit)
 		{
-			// affichage d'informations
-			System.out.println("Tour de "+joueurCourant_);
-			System.out.println("Ou voulez vous placer votre pion ?");
+			// affichage de la carte
 			afficher();
-
-			// tant que le joueur n'a pas ajouté de pion
-			while(!ajouter)
+			
+			// demander commande
+			// - 1 -> jouer
+			// - 2 -> quitter
+			// - 3 -> calculeDistance
+			// - 4 -> afficheComposante
+			System.out.println("Tour de "+joueurCourant_);
+			System.out.println("Choisissez:");
+			System.out.println(" 1: Jouer");
+			System.out.println(" 2: Quitter");
+			System.out.println(" 3: CalculeDistance");
+			System.out.println(" 4: afficheComposante");
+			
+			choix = demanderValeur(0, 5, sc);
+			if(choix == 1)
 			{
-				// récupération de x
-				System.out.println("X ?");
-				x = sc.nextInt();
-				while(x < 0 || x >= taille_)
+				System.out.println("Ou voulez vous placer votre pion ?");
+				
+				int x, y;
+			
+				// tant que le joueur n'a pas ajouté de pion
+				while(!ajouter)
 				{
-					System.out.println("X doit être compris entre 0 et "+(taille_-1)+"\nX ?");
-					x = sc.nextInt();
-				}
+					// récupération de x
+					System.out.println("X ?");
+					x = demanderValeur(0, taille_-1, sc);
 
-				// récupération de y
-				System.out.println("Y ?");
-				y = sc.nextInt();
-				while(y < 0 || y >= taille_)
+					// récupération de y
+					System.out.println("Y ?");
+					y = demanderValeur(0, taille_-1, sc);
+
+					// on ajoute le pion en (x, y)
+					ajouter = ajoutePion(x, y, joueurCourant_.getCouleur());
+
+					// si on ne peut pas ajouter
+					if(!ajouter)
+					{
+						System.out.println("Vous ne pouvez pas ajouter un pion ici !");
+					}
+				}
+				System.out.println(CLEAR);
+				
+				// si le joueur n'a pas gagné, c'est a l'ordi de jouer
+				if(enCours = !finDuJeu())
 				{
-					System.out.println("Y doit être compris entre 0 et "+(taille_-1)+"\nY ?");
-					y = sc.nextInt();
+					System.out.println("Tour de l'ordinateur");
+					evaluerPion();
 				}
-
-				// on ajoute le pion en (x, y)
-				ajouter = ajoutePion(x, y, joueurCourant_.getCouleur());
-
-				// si on ne peut pas ajouter
-				if(!ajouter)
+				else
 				{
-					System.out.println("Vous ne pouvez pas ajouter un pion ici !");
+					ordiGagne = false;
 				}
+			
+				// on teste si le jeu est finit
+				enCours = !finDuJeu();
+			
+				// on réinitialise le booleen ajouter a faux
+				ajouter = false;
 			}
-
-			// si le joueur n'a pas gagné, c'est a l'ordi de jouer
-			System.out.println("Fin du tour\n");
-			if(enCours = !finDuJeu())
+			else if(choix == 2)
 			{
-				System.out.println("Tour de l'ordinateur");
-				evaluerPion();
+				quit = true;
+			}
+			else if(choix == 3)
+			{
+				int x1, y1, x2, y2;
+				
+				// récupération de x1
+				System.out.println("X1 ?");
+				x1 = demanderValeur(-1, taille_, sc);
+
+				// récupération de y1
+				System.out.println("Y1 ?");
+				y1 = demanderValeur(-1, taille_, sc);
+				
+				// récupération de x2
+				System.out.println("X2 ?");
+				x2 = demanderValeur(-1, taille_, sc);
+
+				// récupération de y2
+				System.out.println("Y2 ?");
+				y2 = demanderValeur(-1, taille_, sc);
+				
+				System.out.println(CLEAR);
+				System.out.println("Distance : "+calculeDistanceChemin(x1, y1, x2, y2).getPremier());
 			}
 			else
 			{
-				ordiGagne = false;
+				int x, y;
+				// récupération de x
+				System.out.println("X ?");
+				x = demanderValeur(-1, taille_, sc);
+
+				// récupération de y
+				System.out.println("Y ?");
+				y = demanderValeur(-1, taille_, sc);
+				
+				System.out.println(CLEAR);
+				System.out.print("Composante : ");
+				getCase(x, y).afficheComposante();
 			}
-			
-			// on teste si le jeu est finit
-			enCours = !finDuJeu();
-		
-			// on réinitialise le booleen ajouter a faux
-			ajouter = false;
 		}
 		
-		// on affiche le gagnant et le plateau final
-		if(ordiGagne)
+		
+		if(!quit)
 		{
-			System.out.println("Ordi à gagné !");
+			System.out.println(CLEAR);
+			// on affiche le gagnant et le plateau final
+			afficher();
+			if(ordiGagne)
+			{
+				System.out.println("Ordi à gagné !");
+			}
+			else
+			{
+				System.out.println(joueurCourant_+" a gagné !");
+			}
 		}
 		else
 		{
-			System.out.println(joueurCourant_+" a gagné !");
+			System.out.println(CLEAR);
+			System.out.println(joueurCourant_+" a quitté la partie.");
 		}
-		afficher();
+		
 		sc.close();
+	}
+	
+	public int demanderValeur(int min, int max, Scanner sc)
+	{
+		int value = sc.nextInt();
+		
+		while(value <= min || value >= max)
+		{
+			System.out.println("La valeur doit être comprise entre "+min+" et "+max+" (exclus)\n");
+			value = sc.nextInt();
+		}
+		
+		return value;
 	}
 	
 	/**
@@ -615,6 +763,7 @@ public class Carte {
 				courante = distanceCheminJ.getSecond().firstElement();
 				distanceCheminJ.getSecond().remove(0);
 			}
+			System.out.println("L'ordinateur à joué en ("+courante.getX()+" ; "+courante.getY()+")");
 		}
 		else // sinon on attaque
 		{
@@ -623,6 +772,7 @@ public class Carte {
 			{
 				courante = distanceCheminO.getSecond().pop();
 			}
+			System.out.println("L'ordinateur à joué en ("+courante.getX()+" ; "+courante.getY()+")");
 		}
 	}
 }
